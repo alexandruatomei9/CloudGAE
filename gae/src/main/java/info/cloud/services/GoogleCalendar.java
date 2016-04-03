@@ -3,7 +3,9 @@ package info.cloud.services;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -23,52 +25,63 @@ import com.google.api.services.calendar.model.Events;
 
 public class GoogleCalendar {
 
-	private static final String APPLICATION_NAME = "CloudApp";
+	private static final String APPLICATION_NAME = "cloudApp";
 
+	/** Directory to store user credentials. */
 	private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"),
-			".credentials/calendar-java-quickstart.json");
+			".store/calendar_sample");
 
-	private static final List<String> SCOPES = Arrays.asList(CalendarScopes.CALENDAR_READONLY);
+	private static FileDataStoreFactory dataStoreFactory;
 
+	/** Global instance of the JSON factory. */
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-	private static HttpTransport HTTP_TRANSPORT;
+	/** Global instance of the HTTP transport. */
+	private static HttpTransport httpTransport;
 
-	private static FileDataStoreFactory DATA_STORE_FACTORY;
+	private static Calendar client;
 
-	static {
-		try {
-			HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-			DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-		} catch (Throwable t) {
-			t.printStackTrace();
+	/** Authorizes the installed application to access user's protected data. */
+	private static Credential authorize() throws Exception {
+		// load client secrets
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY,
+				new InputStreamReader(GoogleCalendar.class.getResourceAsStream("/client_secrets.json")));
+		if (clientSecrets.getDetails().getClientId().startsWith("Enter")
+				|| clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
+			System.out.println("Overwrite the src/main/resources/client_secrets.json file with the client secrets file "
+					+ "you downloaded from the Quickstart tool or manually enter your Client ID and Secret "
+					+ "from https://code.google.com/apis/console/?api=calendar#project:380094479037 "
+					+ "into src/main/resources/client_secrets.json");
 			System.exit(1);
 		}
+
+		Set<String> scopes = new HashSet<String>();
+		scopes.add(CalendarScopes.CALENDAR);
+		scopes.add(CalendarScopes.CALENDAR_READONLY);
+
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(httpTransport, JSON_FACTORY,
+				clientSecrets, scopes).setDataStoreFactory(dataStoreFactory).build();
+		// authorize
+		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
 	}
 
-	private Credential authorize() throws Exception {
-		InputStream in = GoogleCalendar.class.getClassLoader().getResourceAsStream("Web-INF/client_secret.json");
-		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-				clientSecrets, SCOPES).setDataStoreFactory(DATA_STORE_FACTORY).setAccessType("offline").build();
-		Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-		return credential;
-	}
-
-	private Calendar getCalendarService() throws Exception {
-		Credential credential = authorize();
-		return new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-				.setApplicationName(APPLICATION_NAME).build();
-	}
 
 	public List<Event> getEvents(int numberOfEvents) throws Exception {
-		Calendar service = getCalendarService();
+		httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+
+		dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
+
+		Credential credential = authorize();
+
+		// set up global Calendar instance
+		client = new Calendar.Builder(httpTransport, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME)
+				.build();
+
+		System.out.println("Success! Now add code here.");
 
 		DateTime now = new DateTime(System.currentTimeMillis());
-		Events events = service.events().list("primary").setMaxResults(numberOfEvents).setTimeMin(now).setOrderBy("startTime")
-				.setSingleEvents(true).execute();
+		Events events = client.events().list("primary").setMaxResults(numberOfEvents).setTimeMin(now)
+				.setOrderBy("startTime").setSingleEvents(true).execute();
 		return events.getItems();
 	}
 }
-

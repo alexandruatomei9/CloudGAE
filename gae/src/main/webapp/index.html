@@ -18,7 +18,8 @@
             </button>
             <a class="brand" href="#">Cloud App</a>
             <div class="nav-collapse collapse pull-right">
-                <a href="javascript:void(0);" class="btn" id="signinButton">Sign in</a>
+            	<div id="username" class="username"></div>
+                <a href="javascript:void(0);" class="btn" id="signinButton" style="margin-top:0;">Sign in</a>
             </div>
         </div>
     </div>
@@ -26,17 +27,6 @@
 <div class="container">
 
     <div id="outputLog"></div>
-
-    <form action="javascript:void(0);">
-        <h2>Get Greeting</h2>
-        <div><span class="label">Greeting ID: </span><input id="id" /></div>
-        <div><input id="getGreeting" type="submit" class="btn btn-small" value="Submit"></div>
-    </form>
-    
-    <form action="javascript:void(0);">
-        <h2>List Greetings</h2>
-        <div><input id="listGreeting" type="submit" class="btn btn-small" value="Submit"></div>
-    </form>
     
     <form action="javascript:void(0);">
         <h2>Multiply Greetings</h2>
@@ -54,10 +44,20 @@
         <h2>Get Calendar</h2>
         <div><input id="getCalendar" type="submit" class="btn btn-small" value="Submit"></div>
     </form>
+    
+    <hr/>
+    
+    <form action="javascript:void(0);">
+        <h2>Custom Search</h2>
+        <div><span class="label">Query: </span><input id="query" /></div>
+        <div><input id="search" type="submit" class="btn btn-small" value="Submit"></div>
+    </form>
+    <div id="cacheOutput"></div>
+    <div id="searchOutput" class="search-results"></div>
 
     <script type="text/javascript">
         function init() {
-            google.devrel.samples.hello.init('//' + window.location.host + '/_ah/api');
+        	initApp('//' + window.location.host + '/_ah/api');
         }
     </script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>

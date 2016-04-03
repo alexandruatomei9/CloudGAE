@@ -1,209 +1,173 @@
-/** google global namespace for Google projects. */
-var google = google || {};
+CLIENT_ID = '396486651427-6oja5nn04gfo35d7e8s2iegu37mnqsjf.apps.googleusercontent.com';
+SCOPES = 'https://www.googleapis.com/auth/userinfo.email';
+signedIn = false;
+var loggedInUserId;
 
-/** devrel namespace for Google Developer Relations projects. */
-google.devrel = google.devrel || {};
-
-/** samples namespace for DevRel sample code. */
-google.devrel.samples = google.devrel.samples || {};
-
-/** hello namespace for this sample. */
-google.devrel.samples.hello = google.devrel.samples.hello || {};
-
-/**
- * Client ID of the application (from the APIs Console).
- * @type {string}
- */
-google.devrel.samples.hello.CLIENT_ID =
-    '396486651427-6oja5nn04gfo35d7e8s2iegu37mnqsjf.apps.googleusercontent.com';
-
-/**
- * Scopes used by the application.
- * @type {string}
- */
-google.devrel.samples.hello.SCOPES =
-    'https://www.googleapis.com/auth/userinfo.email';
-
-/**
- * Whether or not the user is signed in.
- * @type {boolean}
- */
-google.devrel.samples.hello.signedIn = false;
-
-/**
- * Loads the application UI after the user has completed auth.
- */
-google.devrel.samples.hello.userAuthed = function() {
-  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
-    if (!resp.code) {
-      google.devrel.samples.hello.signedIn = true;
-      document.getElementById('signinButton').innerHTML = 'Sign out';
-      document.getElementById('authedGreeting').disabled = false;
-    }
-  });
+userAuthed = function() {
+	var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
+		if (!resp.code) {
+			signedIn = true;
+			printUsername(resp);
+			loggedInUserId = resp.id;
+			document.getElementById('signinButton').innerHTML = 'Sign out';
+			document.getElementById('authedGreeting').disabled = false;
+		}
+	});
 };
 
-/**
- * Handles the auth flow, with the given value for immediate mode.
- * @param {boolean} mode Whether or not to use immediate mode.
- * @param {Function} callback Callback to call on completion.
- */
-google.devrel.samples.hello.signin = function(mode, callback) {
-  gapi.auth.authorize({client_id: google.devrel.samples.hello.CLIENT_ID,
-      scope: google.devrel.samples.hello.SCOPES, immediate: mode},
-      callback);
+
+signin = function(mode, callback) {
+	gapi.auth.authorize({
+		client_id : CLIENT_ID,
+		scope : SCOPES,
+		immediate : mode
+	}, callback);
 };
 
-/**
- * Presents the user with the authorization popup.
- */
-google.devrel.samples.hello.auth = function() {
-  if (!google.devrel.samples.hello.signedIn) {
-    google.devrel.samples.hello.signin(false,
-        google.devrel.samples.hello.userAuthed);
-  } else {
-    google.devrel.samples.hello.signedIn = false;
-    document.getElementById('signinButton').innerHTML = 'Sign in';
-    document.getElementById('authedGreeting').disabled = true;
-  }
+auth = function() {
+	if (!signedIn) {
+		signin(false,
+				userAuthed);
+	} else {
+		signedIn = false;
+		document.getElementById('signinButton').innerHTML = 'Sign in';
+		document.getElementById('authedGreeting').disabled = true;
+	}
 };
 
-/**
- * Prints a greeting to the greeting log.
- * param {Object} greeting Greeting to print.
- */
-google.devrel.samples.hello.print = function(greeting) {
-  var element = document.createElement('div');
-  element.classList.add('row');
-  element.innerHTML = greeting.message;
-  document.getElementById('outputLog').appendChild(element);
+
+print = function(greeting) {
+	var element = document.createElement('div');
+	element.classList.add('row');
+	element.innerHTML = greeting.message;
+	document.getElementById('outputLog').appendChild(element);
 };
 
-/**
- * Gets a numbered greeting via the API.
- * @param {string} id ID of the greeting.
- */
-google.devrel.samples.hello.getGreeting = function(id) {
-  gapi.client.helloworld.greetings.getGreeting({'id': id}).execute(
-      function(resp) {
-        if (!resp.code) {
-          google.devrel.samples.hello.print(resp);
-        } else {
-          window.alert(resp.message);
-        }
-      });
+getCachedSearches = function() {
+	gapi.client.cloudapi.googleServices.getCachedSearches(loggedInUserId).execute(function(resp) {
+		if (!resp.code) {
+			resp.items = resp.items || [];
+			clearElement(document.getElementById('cacheOutput'));
+			for (var i = 0; i < resp.items.length; i++) {
+				printCache(resp.items[i]);
+			}
+		}
+	});
 };
 
-/**
- * Lists greetings via the API.
- */
-google.devrel.samples.hello.listGreeting = function() {
-  gapi.client.helloworld.greetings.listGreeting().execute(
-      function(resp) {
-        if (!resp.code) {
-          resp.items = resp.items || [];
-          for (var i = 0; i < resp.items.length; i++) {
-            google.devrel.samples.hello.print(resp.items[i]);
-          }
-        }
-      });
+multiplyGreeting = function(greeting, times) {
+	gapi.client.cloudapi.googleServices.multiply({
+		'message' : greeting,
+		'times' : times
+	}).execute(function(resp) {
+		if (!resp.code) {
+			print(resp);
+		}
+	});
 };
 
-/**
- * Gets a greeting a specified number of times.
- * @param {string} greeting Greeting to repeat.
- * @param {string} count Number of times to repeat it.
- */
-google.devrel.samples.hello.multiplyGreeting = function(
-    greeting, times) {
-  gapi.client.helloworld.greetings.multiply({
-      'message': greeting,
-      'times': times
-    }).execute(function(resp) {
-      if (!resp.code) {
-        google.devrel.samples.hello.print(resp);
-      }
-    });
+authedGreeting = function(id) {
+	gapi.client.cloudapi.googleServices.authed().execute(function(resp) {
+		print(resp);
+	});
 };
 
-/**
- * Greets the current user via the API.
- */
-google.devrel.samples.hello.authedGreeting = function(id) {
-  gapi.client.helloworld.greetings.authed().execute(
-      function(resp) {
-        google.devrel.samples.hello.print(resp);
-      });
+printCalendarEvent = function(event) {
+	var element = document.createElement('div');
+	element.classList.add('row');
+	element.innerHTML = event;
+	document.getElementById('outputLog').appendChild(element);
 };
 
-google.devrel.samples.hello.printCalendarEvent = function(event) {
-	  var element = document.createElement('div');
-	  element.classList.add('row');
-	  element.innerHTML = event;
-	  document.getElementById('outputLog').appendChild(element);
-	};
-
-google.devrel.samples.hello.getCalendar = function() {
-	  gapi.client.helloworld.greetings.getCalendar().execute(
-	      function(resp) {
-	        if (!resp.code) {
-	          resp.items = resp.items || [];
-	          for (var i = 0; i < resp.items.length; i++) {
-	            google.devrel.samples.hello.printCalendarEvent(resp.items[i]);
-	          }
-	        }
-	      });
-	};
-
-/**
- * Enables the button callbacks in the UI.
- */
-google.devrel.samples.hello.enableButtons = function() {
-  document.getElementById('getGreeting').onclick = function() {
-    google.devrel.samples.hello.getGreeting(
-        document.getElementById('id').value);
-  }
-
-  document.getElementById('listGreeting').onclick = function() {
-    google.devrel.samples.hello.listGreeting();
-  }
-
-  document.getElementById('multiplyGreetings').onclick = function() {
-    google.devrel.samples.hello.multiplyGreeting(
-        document.getElementById('greeting').value,
-        document.getElementById('count').value);
-  }
-
-  document.getElementById('authedGreeting').onclick = function() {
-    google.devrel.samples.hello.authedGreeting();
-  }
-  
-  document.getElementById('signinButton').onclick = function() {
-    google.devrel.samples.hello.auth();
-  }
-  
-  document.getElementById('getCalendar').onclick = function() {
-	    google.devrel.samples.hello.getCalendar();
-  }
+getCalendar = function() {
+	gapi.client.cloudapi.googleServices.getCalendar().execute(function(resp) {
+		if (!resp.code) {
+			resp.items = resp.items || [];
+			for (var i = 0; i < resp.items.length; i++) {
+				printCalendarEvent(resp.items[i]);
+			}
+		}
+	});
 };
 
-/**
- * Initializes the application.
- * @param {string} apiRoot Root of the API's path.
- */
-google.devrel.samples.hello.init = function(apiRoot) {
-  // Loads the OAuth and helloworld APIs asynchronously, and triggers login
-  // when they have completed.
-  var apisToLoad;
-  var callback = function() {
-    if (--apisToLoad == 0) {
-      google.devrel.samples.hello.enableButtons();
-      google.devrel.samples.hello.signin(true,
-          google.devrel.samples.hello.userAuthed);
-    }
-  }
+printSearchResult = function(result) {
+	var element = document.createElement('div');
+	element.classList.add('row');
+	element.innerHTML = '<a href="'+result.url+'">'+result.title+'</a>';
+	document.getElementById('searchOutput').appendChild(element);
+};
 
-  apisToLoad = 2; // must match number of calls to gapi.client.load()
-  gapi.client.load('helloworld', 'v1', callback, apiRoot);
-  gapi.client.load('oauth2', 'v2', callback);
+search = function(query) {
+	gapi.client.cloudapi.googleServices.search({
+		'query' : query
+	}).execute(function(resp) {
+		if (!resp.code) {
+			resp.items = resp.items || [];
+			getCachedSearches();
+			clearElement(document.getElementById('searchOutput'));
+			for (var i = 0; i < resp.items.length; i++) {
+				printSearchResult(resp.items[i]);
+			}
+		}
+	});
+};
+
+printCache = function(result) {
+	var element = document.createElement('div');
+	element.classList.add('row');
+	element.innerHTML = result.query;
+	document.getElementById('cacheOutput').appendChild(element);
+};
+
+printUsername = function(user) {
+	var element = document.createElement('div');
+	element.innerHTML = user.name;
+	document.getElementById('username').appendChild(element);
+};
+
+enableButtons = function() {
+	document.getElementById('multiplyGreetings').onclick = function() {
+		multiplyGreeting(document
+				.getElementById('greeting').value, document
+				.getElementById('count').value);
+	}
+
+	document.getElementById('authedGreeting').onclick = function() {
+		authedGreeting();
+	}
+
+	document.getElementById('signinButton').onclick = function() {
+		auth();
+	}
+
+	document.getElementById('getCalendar').onclick = function() {
+		getCalendar();
+	}
+
+	document.getElementById('search').onclick = function() {
+		search(document.getElementById('query').value);
+	}
+};
+
+clearElement = function(element) {
+	while (element.firstChild) {
+		element.removeChild(element.firstChild);
+	}
+}
+
+initApp = function(apiRoot) {
+	// Loads the OAuth and helloworld APIs asynchronously, and triggers login
+	// when they have completed.
+	var apisToLoad;
+	var callback = function() {
+		if (--apisToLoad == 0) {
+			enableButtons();
+			signin(true,
+					userAuthed);
+		}
+	}
+
+	apisToLoad = 2; // must match number of calls to gapi.client.load()
+	gapi.client.load('cloudapi', 'v1', callback, apiRoot);
+	gapi.client.load('oauth2', 'v2', callback);
 };
