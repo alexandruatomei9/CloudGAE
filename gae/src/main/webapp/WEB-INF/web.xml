@@ -4,13 +4,24 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>info.cloud.Greetings</param-value>
+            <param-value>info.cloud.Greetings,info.cloud.StorageEndpoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>SystemServiceServlet</servlet-name>
         <url-pattern>/_ah/spi/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GCS</servlet-name>
+        <servlet-class>info.cloud.GcsExampleServlet</servlet-class>
+
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GCS</servlet-name>
+        <url-pattern>/_ah/spi/gcs/*</url-pattern>
+    </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>

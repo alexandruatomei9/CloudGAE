@@ -2,14 +2,12 @@ package info.cloud;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Named;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.response.NotFoundException;
-import com.google.api.services.calendar.model.Event;
 import com.google.appengine.api.users.User;
 
 import info.cloud.services.GoogleCalendar;
@@ -55,16 +53,16 @@ public class Greetings {
 		return response;
 	}
 
-	//@ApiMethod(name = "greetings.calendar", httpMethod = "get")
-	public List<Event> getCalendar() {
-		GoogleCalendar calendar = new GoogleCalendar();
-		List<Event> events = Collections.emptyList();
-		try {
-			events = calendar.getEvents(20);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return events;
-	}
+//	//@ApiMethod(name = "greetings.calendar", httpMethod = "get")
+//	public List<Event> getCalendar() {
+//		GoogleCalendar calendar = new GoogleCalendar();
+//		List<Event> events = Collections.emptyList();
+//		try {
+//			events = calendar.getEvents(20);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return events;
+//	}
 }
