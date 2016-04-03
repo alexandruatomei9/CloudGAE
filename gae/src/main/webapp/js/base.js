@@ -1,12 +1,3 @@
-
-/**
- * @fileoverview
- * Provides methods for the Hello Endpoints sample UI and interaction with the
- * Hello Endpoints API.
- *
- * @author danielholevoet@google.com (Dan Holevoet)
- */
-
 /** google global namespace for Google projects. */
 var google = google || {};
 
@@ -24,7 +15,7 @@ google.devrel.samples.hello = google.devrel.samples.hello || {};
  * @type {string}
  */
 google.devrel.samples.hello.CLIENT_ID =
-    '396486651427-9v868j75sdsmjjc45qjvng3a3lhhhu4s.apps.googleusercontent.com';
+    '396486651427-6oja5nn04gfo35d7e8s2iegu37mnqsjf.apps.googleusercontent.com';
 
 /**
  * Scopes used by the application.
@@ -145,6 +136,25 @@ google.devrel.samples.hello.authedGreeting = function(id) {
       });
 };
 
+google.devrel.samples.hello.printCalendarEvent = function(event) {
+	  var element = document.createElement('div');
+	  element.classList.add('row');
+	  element.innerHTML = event;
+	  document.getElementById('outputLog').appendChild(element);
+	};
+
+google.devrel.samples.hello.getCalendar = function() {
+	  gapi.client.helloworld.greetings.getCalendar().execute(
+	      function(resp) {
+	        if (!resp.code) {
+	          resp.items = resp.items || [];
+	          for (var i = 0; i < resp.items.length; i++) {
+	            google.devrel.samples.hello.printCalendarEvent(resp.items[i]);
+	          }
+	        }
+	      });
+	};
+
 /**
  * Enables the button callbacks in the UI.
  */
@@ -170,6 +180,10 @@ google.devrel.samples.hello.enableButtons = function() {
   
   document.getElementById('signinButton').onclick = function() {
     google.devrel.samples.hello.auth();
+  }
+  
+  document.getElementById('getCalendar').onclick = function() {
+	    google.devrel.samples.hello.getCalendar();
   }
 };
 
