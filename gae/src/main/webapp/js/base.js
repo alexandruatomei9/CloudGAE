@@ -10,7 +10,6 @@ userAuthed = function() {
 			printUsername(resp);
 			loggedInUserId = resp.id;
 			document.getElementById('signinButton').innerHTML = 'Sign out';
-			document.getElementById('authedGreeting').disabled = false;
 		}
 	});
 };
@@ -41,35 +40,6 @@ print = function(greeting) {
 	element.classList.add('row');
 	element.innerHTML = greeting.message;
 	document.getElementById('outputLog').appendChild(element);
-};
-
-getCachedSearches = function() {
-	gapi.client.cloudapi.googleServices.getCachedSearches(loggedInUserId).execute(function(resp) {
-		if (!resp.code) {
-			resp.items = resp.items || [];
-			clearElement(document.getElementById('cacheOutput'));
-			for (var i = 0; i < resp.items.length; i++) {
-				printCache(resp.items[i]);
-			}
-		}
-	});
-};
-
-multiplyGreeting = function(greeting, times) {
-	gapi.client.cloudapi.googleServices.multiply({
-		'message' : greeting,
-		'times' : times
-	}).execute(function(resp) {
-		if (!resp.code) {
-			print(resp);
-		}
-	});
-};
-
-authedGreeting = function(id) {
-	gapi.client.cloudapi.googleServices.authed().execute(function(resp) {
-		print(resp);
-	});
 };
 
 printCalendarEvent = function(event) {
@@ -103,7 +73,6 @@ search = function(query) {
 	}).execute(function(resp) {
 		if (!resp.code) {
 			resp.items = resp.items || [];
-			getCachedSearches();
 			clearElement(document.getElementById('searchOutput'));
 			for (var i = 0; i < resp.items.length; i++) {
 				printSearchResult(resp.items[i]);
@@ -112,30 +81,14 @@ search = function(query) {
 	});
 };
 
-printCache = function(result) {
-	var element = document.createElement('div');
-	element.classList.add('row');
-	element.innerHTML = result.query;
-	document.getElementById('cacheOutput').appendChild(element);
-};
-
 printUsername = function(user) {
 	var element = document.createElement('div');
 	element.innerHTML = user.name;
+	clearElement(document.getElementById('username'));
 	document.getElementById('username').appendChild(element);
 };
 
 enableButtons = function() {
-	document.getElementById('multiplyGreetings').onclick = function() {
-		multiplyGreeting(document
-				.getElementById('greeting').value, document
-				.getElementById('count').value);
-	}
-
-	document.getElementById('authedGreeting').onclick = function() {
-		authedGreeting();
-	}
-
 	document.getElementById('signinButton').onclick = function() {
 		auth();
 	}
@@ -156,8 +109,6 @@ clearElement = function(element) {
 }
 
 initApp = function(apiRoot) {
-	// Loads the OAuth and helloworld APIs asynchronously, and triggers login
-	// when they have completed.
 	var apisToLoad;
 	var callback = function() {
 		if (--apisToLoad == 0) {

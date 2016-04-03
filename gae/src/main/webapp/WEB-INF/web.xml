@@ -4,7 +4,7 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>info.cloud.Greetings,info.cloud.StorageEndpoint</param-value>
+            <param-value>info.cloud.GoogleServices,info.cloud.StorageEndpoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
