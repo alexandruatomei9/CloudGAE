@@ -30,16 +30,8 @@ auth = function() {
 	} else {
 		signedIn = false;
 		document.getElementById('signinButton').innerHTML = 'Sign in';
-		document.getElementById('authedGreeting').disabled = true;
+		clearElement(document.getElementById('username'));
 	}
-};
-
-
-print = function(greeting) {
-	var element = document.createElement('div');
-	element.classList.add('row');
-	element.innerHTML = greeting.message;
-	document.getElementById('outputLog').appendChild(element);
 };
 
 printCalendarEvent = function(event) {
@@ -60,13 +52,6 @@ getCalendar = function() {
 	});
 };
 
-printSearchResult = function(result) {
-	var element = document.createElement('div');
-	element.classList.add('row');
-	element.innerHTML = '<a href="'+result.url+'">'+result.title+'</a>';
-	document.getElementById('searchOutput').appendChild(element);
-};
-
 search = function(query) {
 	gapi.client.cloudapi.googleServices.search({
 		'query' : query
@@ -77,8 +62,42 @@ search = function(query) {
 			for (var i = 0; i < resp.items.length; i++) {
 				printSearchResult(resp.items[i]);
 			}
+			getSearches();
 		}
 	});
+};
+
+printSearchResult = function(result) {
+	var element = document.createElement('div');
+	element.classList.add('row');
+	element.innerHTML = '<a href="'+result.url+'">'+result.title+'</a>';
+	document.getElementById('searchOutput').appendChild(element);
+};
+
+getSearches = function() {
+	gapi.client.cloudapi.googleServices.getSearches({}).execute(function(resp) {
+		if (!resp.code) {
+			resp.items = resp.items || [];
+			clearElement(document.getElementById('searches'));
+			for (var i = 0; i < resp.items.length; i++) {
+				printSearchQuery(resp.items[i]);
+			}
+		}
+	});
+};
+
+printSearchQuery = function(result) {
+	var tr = document.createElement('tr');
+	var td1 = document.createElement('td');
+	td1.appendChild(document.createTextNode(result.query));
+    tr.appendChild(td1);
+    var td2 = document.createElement('td');
+	td2.appendChild(document.createTextNode(result.fromCache));
+    tr.appendChild(td2);
+    var td3 = document.createElement('td');
+	td3.appendChild(document.createTextNode(result.duration));
+    tr.appendChild(td3);
+	document.getElementById('searches').appendChild(tr);
 };
 
 printUsername = function(user) {
@@ -115,6 +134,7 @@ initApp = function(apiRoot) {
 			enableButtons();
 			signin(true,
 					userAuthed);
+			getSearches();
 		}
 	}
 

@@ -1,50 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cloud App</title>
-    <script type="text/javascript" src="/js/base.js"></script>
-    <link type="text/css" rel="stylesheet" href="/bootstrap/css/bootstrap.css">
-    <link type="text/css" rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.css">
-    <link type="text/css" rel="stylesheet" href="/css/style.css">
+<title>Cloud App</title>
+<script type="text/javascript" src="/js/base.js"></script>
+<link type="text/css" rel="stylesheet"
+	href="/bootstrap/css/bootstrap.css">
+<link type="text/css" rel="stylesheet"
+	href="/bootstrap/css/bootstrap-responsive.css">
+<link type="text/css" rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="brand" href="#">Cloud App</a>
-            <div class="nav-collapse collapse pull-right">
-            	<div id="username" class="username"></div>
-                <a href="javascript:void(0);" class="btn" id="signinButton" style="margin-top:0;">Sign in</a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="container">
-    <form action="javascript:void(0);">
-        <h2>Get Calendar</h2>
-        <div><input id="getCalendar" type="submit" class="btn btn-small" value="Submit"></div>
-    </form>
-    
-    <hr/>
-    
-    <form action="javascript:void(0);">
-        <h2>Custom Search</h2>
-        <div><span class="label">Query: </span><input id="query" /></div>
-        <div><input id="search" type="submit" class="btn btn-small" value="Submit"></div>
-    </form>
-    <div id="searchOutput" class="search-results"></div>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="brand" href="#">Cloud App</a>
+				<div class="nav-collapse collapse pull-right">
+					<div id="username" class="username"></div>
+					<a href="javascript:void(0);" class="btn" id="signinButton"
+						style="margin-top: 0;">Sign in</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<form action="javascript:void(0);">
+			<h2>Get Calendar</h2>
+			<div>
+				<input id="getCalendar" type="submit" class="btn btn-small"
+					value="Submit">
+			</div>
+		</form>
 
-    <script type="text/javascript">
-        function init() {
-        	initApp('//' + window.location.host + '/_ah/api');
-        }
-    </script>
-    <script src="https://apis.google.com/js/client.js?onload=init"></script>
-</div>
+		<hr />
+
+		<form action="javascript:void(0);">
+			<h2>Custom Search</h2>
+			<div>
+				<span class="label">Query: </span><input id="query" />
+			</div>
+			<div>
+				<input id="search" type="submit" class="btn btn-small"
+					value="Submit">
+			</div>
+		</form>
+		<div id="searchOutput" class="search-results"></div>
+
+		<hr/>
+		
+		<h3>Latest 20 searches through this app</h3>
+		
+		<table style="width: 100%" class="table table-inverse table-striped">
+			<tr>
+				<th>Query</th>
+				<th>From Cache</th>
+				<th>Duration</th>
+			</tr>
+			<tbody id="searches"></tbody>
+		</table>
+
+
+		<script type="text/javascript">
+			function init() {
+				initApp('//' + window.location.host + '/_ah/api');
+			}
+		</script>
+		<script src="https://apis.google.com/js/client.js?onload=init"></script>
+	</div>
 </body>
 </html>

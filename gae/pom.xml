@@ -31,18 +31,18 @@
 			<version>${appengine.version}</version>
 		</dependency>
 
-        <dependency>
-            <groupId>com.google.api-client</groupId>
-            <artifactId>google-api-client-appengine</artifactId>
-            <version>1.20.0</version>
-            <exclusions>
-                <!-- creates conflicts with another guava version in appengine-gcs-client -->
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava-jdk5</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client-appengine</artifactId>
+			<version>1.20.0</version>
+			<exclusions>
+				<!-- creates conflicts with another guava version in appengine-gcs-client -->
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava-jdk5</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.appengine.tools</groupId>
@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-calendar</artifactId>
-			<version>v3-rev125-1.20.0</version>
+			<version>v3-rev173-1.21.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
@@ -91,6 +91,12 @@
 			<artifactId>google-api-services-customsearch</artifactId>
 			<version>v1-rev48-1.21.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-pubsub</artifactId>
+			<version>v1-rev9-1.21.0</version>
+		</dependency>
+
 
 		<!-- Test Dependencies -->
 		<dependency>
