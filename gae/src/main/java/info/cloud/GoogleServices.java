@@ -15,8 +15,10 @@ import info.cloud.services.GoogleCalendar;
 import info.cloud.services.GoogleDatastore;
 import info.cloud.services.GoogleMemcache;
 import info.cloud.services.GoogleSearch;
+import info.cloud.services.GoogleYoutube;
 import info.cloud.util.GoogleResult;
 import info.cloud.util.QueryDetails;
+import info.cloud.util.YoutubeVideo;
 
 @Api(name = "cloudapi", version = "v1", scopes = { Constants.EMAIL_SCOPE }, clientIds = { Constants.WEB_CLIENT_ID,
 		Constants.ANDROID_CLIENT_ID, Constants.IOS_CLIENT_ID,
@@ -25,6 +27,7 @@ public class GoogleServices {
 	
 	GoogleDatastore datastore = new GoogleDatastore();
 	GoogleSearch googleSearch = new GoogleSearch();
+	GoogleYoutube youtube = new GoogleYoutube();
 
 	public List<Event> getCalendar() {
 		GoogleCalendar calendar = new GoogleCalendar();
@@ -49,11 +52,17 @@ public class GoogleServices {
 			}
 			long endTime = System.currentTimeMillis();
 			datastore.saveInDatastore(query, fromCache, endTime - startTime);
+			
 			return result;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		return Collections.emptyList();
+	}
+	
+	public List<YoutubeVideo> searchYoutube(@Named("query") String query) throws NotFoundException, GeneralSecurityException {
+		return youtube.search(query);
 	}
 	
 	public List<QueryDetails> getSearches() throws NotFoundException, GeneralSecurityException {

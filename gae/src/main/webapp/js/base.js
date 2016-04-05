@@ -10,6 +10,9 @@ userAuthed = function() {
 			printUsername(resp);
 			loggedInUserId = resp.id;
 			document.getElementById('signinButton').innerHTML = 'Sign out';
+			document.getElementById('searchVideos').disabled = false;
+			document.getElementById('search').disabled = false;
+			getSearches();
 		}
 	});
 };
@@ -31,25 +34,9 @@ auth = function() {
 		signedIn = false;
 		document.getElementById('signinButton').innerHTML = 'Sign in';
 		clearElement(document.getElementById('username'));
+		document.getElementById('searchVideos').disabled = true;
+		document.getElementById('search').disabled = true;
 	}
-};
-
-printCalendarEvent = function(event) {
-	var element = document.createElement('div');
-	element.classList.add('row');
-	element.innerHTML = event;
-	document.getElementById('outputLog').appendChild(element);
-};
-
-getCalendar = function() {
-	gapi.client.cloudapi.googleServices.getCalendar().execute(function(resp) {
-		if (!resp.code) {
-			resp.items = resp.items || [];
-			for (var i = 0; i < resp.items.length; i++) {
-				printCalendarEvent(resp.items[i]);
-			}
-		}
-	});
 };
 
 search = function(query) {
@@ -107,13 +94,36 @@ printUsername = function(user) {
 	document.getElementById('username').appendChild(element);
 };
 
+searchYoutube = function(query) {
+	gapi.client.cloudapi.googleServices.searchYoutube({
+		'query' : query
+	}).execute(function(resp) {
+		if (!resp.code) {
+			resp.items = resp.items || [];
+			clearElement(document.getElementById('videos'));
+			for (var i = 0; i < resp.items.length; i++) {
+				printVideo(resp.items[i]);
+			}
+		}
+	});
+};
+
+printVideo = function(result) {
+	var element = document.createElement('div');
+	element.classList.add('video-element');
+	element.innerHTML =
+		'<a href="'+result.url+'" target="_blank"><img border="0" src="'+result.thumbnailUrl+'" width="100" height="100"></a>'
+		+ '<p>' + result.title + '</p>';
+	document.getElementById('videos').appendChild(element);
+};
+
 enableButtons = function() {
 	document.getElementById('signinButton').onclick = function() {
 		auth();
 	}
 
-	document.getElementById('getCalendar').onclick = function() {
-		getCalendar();
+	document.getElementById('searchVideos').onclick = function() {
+		searchYoutube(document.getElementById('videoQuery').value);
 	}
 
 	document.getElementById('search').onclick = function() {
@@ -129,12 +139,13 @@ clearElement = function(element) {
 
 initApp = function(apiRoot) {
 	var apisToLoad;
+	document.getElementById('searchVideos').disabled = true;
+	document.getElementById('search').disabled = true;
 	var callback = function() {
 		if (--apisToLoad == 0) {
 			enableButtons();
 			signin(true,
-					userAuthed);
-			getSearches();
+					userAuthed);			
 		}
 	}
 

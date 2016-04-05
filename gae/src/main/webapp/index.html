@@ -29,14 +29,19 @@
 	</div>
 	<div class="container">
 		<form action="javascript:void(0);">
-			<h2>Get Calendar</h2>
+			<h2>Search Youtube</h2>
 			<div>
-				<input id="getCalendar" type="submit" class="btn btn-small"
-					value="Submit">
+				<span class="label">Query: </span><input id="videoQuery" />
+			</div>
+			<div>
+				<input id="searchVideos" type="submit" class="btn btn-small"
+					value="Search">
 			</div>
 		</form>
+		
+		<div id="videos"></div>
 
-		<hr />
+		<hr style="clear:both"/>
 
 		<form action="javascript:void(0);">
 			<h2>Custom Search</h2>
@@ -45,14 +50,14 @@
 			</div>
 			<div>
 				<input id="search" type="submit" class="btn btn-small"
-					value="Submit">
+					value="Search">
 			</div>
 		</form>
 		<div id="searchOutput" class="search-results"></div>
 
 		<hr/>
 		
-		<h3>Latest 20 searches through this app</h3>
+		<h3>Latest searches through this app</h3>
 		
 		<table style="width: 100%" class="table table-inverse table-striped">
 			<tr>
